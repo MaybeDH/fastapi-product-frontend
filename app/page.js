@@ -1,3 +1,5 @@
+import TaskManager from "@/components/task-manager";
+
 export default async function Home() {
 
   const resp = await fetch("http://localhost:8000/tasks/",
@@ -11,11 +13,15 @@ export default async function Home() {
 
   const data = await resp.json();
 
-  console.log({ resp,data });
+  console.log({ resp, data });
+
 
   return (
-    <div>
-      hola mundo
-    </div>
+    <main className="container mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-8 text-center">Administrador de Tareas</h1>
+      <TaskManager
+        allTasks={data}
+      />
+    </main>
   );
 }
