@@ -11,7 +11,7 @@ export default async function TasksPage() {
   
     const data = await resp.json();
   
-    console.log({ resp, data });
+    //console.log({ resp, data });
   
   
     return (

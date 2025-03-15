@@ -9,7 +9,7 @@ import DeleteConfirmation from "@/components/delete-confirmation"
 
 export default function TaskManager({ allTasks }) {
 
-  console.log({ allTasks });
+  //console.log({ allTasks });
 
   const [tasks, setTasks] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
