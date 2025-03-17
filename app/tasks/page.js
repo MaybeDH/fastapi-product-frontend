@@ -1,4 +1,4 @@
-import TaskManager from "@/components/task-manager";
+import TaskManager from "@/components/task/task-manager";
 export default async function TasksPage() {
   const resp = await fetch("http://localhost:8000/tasks/",
       {

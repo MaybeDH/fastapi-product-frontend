@@ -5,7 +5,7 @@ import { PlusCircle } from "lucide-react";
 import ProductTable from "./product-table";
 import ProductForm from "./product-form";
 import ProductDetails from "./product-details";
-import DeleteConfirmation from "@/components/delete-confirmation";
+import DeleteConfirmation from "@/components/task/delete-confirmation";
 
 export default function ProductManager() {
   const [products, setProducts] = useState([]);

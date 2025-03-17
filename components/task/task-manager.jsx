@@ -2,10 +2,10 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
-import TaskTable from "@/components/task-table"
-import TaskForm from "@/components/task-form"
-import TaskDetails from "@/components/task-details"
-import DeleteConfirmation from "@/components/delete-confirmation"
+import TaskTable from "@/components/task/task-table"
+import TaskForm from "@/components/task/task-form"
+import TaskDetails from "@/components/task/task-details"
+import DeleteConfirmation from "@/components/task/delete-confirmation"
 
 export default function TaskManager({ allTasks }) {
 
