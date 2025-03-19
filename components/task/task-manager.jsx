@@ -2,11 +2,15 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
-import TaskTable from "./task-table";
-import TaskForm from "./task-form";
-import DeleteConfirmation from "../ui/delete-confirmation";
-import TaskDetails from "./task-details";
-export default function TaskManager() {
+import TaskTable from "@/components/task/task-table"
+import TaskForm from "@/components/task/task-form"
+import TaskDetails from "@/components/task/task-details"
+import DeleteConfirmation from "@/components/ui/delete-confirmation"
+
+export default function TaskManager({ allTasks }) {
+
+  //console.log({ allTasks });
+
   const [tasks, setTasks] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
@@ -14,58 +18,72 @@ export default function TaskManager() {
   const [currentTask, setCurrentTask] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
 
-  // Simulate fetching tasks from an API
-  useEffect(() => {
-    // In a real app, this would be an API call
-    const mockTasks = [
-      {
-        id: 1,
-        title: "Completar informe mensual",
-        description: "Finalizar el informe de ventas para la reunión del lunes",
-        completed: false,
-        created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        title: "Preparar presentación",
-        description: "Crear diapositivas para la presentación del nuevo producto",
-        completed: true,
-        created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: 3,
-        title: "Revisar presupuesto",
-        description: "Analizar gastos del trimestre y ajustar proyecciones",
-        completed: false,
-        created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ]
-    setTasks(mockTasks)
-  }, [])
+  useEffect(
+    () => {
+      setTasks(allTasks)
+    },
+    [allTasks]
+  )
 
-  const handleCreateTask = (newTask) => {
+  const handleCreateTask = async (newTask) => {
     const task = {
       ...newTask,
       id: Math.max(0, ...tasks.map((t) => t.id)) + 1,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
+
+    const taskToCreate = {
+      title: task.title,
+      description: task.description,
+    }
+
+    await fetch(`http://localhost:8000/tasks/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }, 
+        body: JSON.stringify(taskToCreate),
+      }
+    )
+
     setTasks([...tasks, task])
     setIsFormOpen(false)
   }
 
-  const handleUpdateTask = (updatedTask) => {
+  const handleUpdateTask = async (updatedTask) => {
+
+    await fetch(`http://localhost:8000/tasks/${updatedTask.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTask),
+      }
+    )
+
+
+
     setTasks(tasks.map((task) =>
       task.id === updatedTask.id ? { ...updatedTask, updated_at: new Date().toISOString() } : task))
     setIsFormOpen(false)
     setIsEditing(false)
   }
 
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     if (currentTask) {
+
+      await fetch(`http://localhost:8000/tasks/${currentTask.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+
       setTasks(tasks.filter((task) => task.id !== currentTask.id))
       setIsDeleteOpen(false)
       setCurrentTask(null)
