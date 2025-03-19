@@ -1,8 +1,9 @@
+import BrandManager from "@/components/brands/brand-manager";
+
 export default function Page() {
   return (
-    <div>
-      <h1>Brands</h1>
-      <p>This is the brands page.</p>
+    <div className="container mx-auto p-4 md:p-6 lg:p-8 overflow-x-auto">
+      <BrandManager />
     </div>
   );
 }

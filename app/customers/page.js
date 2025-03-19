@@ -1,8 +1,10 @@
+import CustomerManager from "@/components/customers/customer-manager";
+
 export default function Page() {
   return (
-    <div>
-      <h1>Customers</h1>
-      <p>This is the customers page.</p>
-    </div>
+    
+     <div className="container mx-auto p-4 md:p-6 lg:p-8 overflow-x-auto">
+     <CustomerManager />
+      </div>
   );
 }
