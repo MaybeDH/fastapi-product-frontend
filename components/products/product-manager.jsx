@@ -16,79 +16,197 @@ export default function ProductManager() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Función para normalizar la estructura de los productos
+  const normalizeProduct = (product, categoriesMap, brandsMap) => {
+    // Asegúrate de que el producto tiene la estructura correcta
+    const normalizedProduct = { ...product };
+    
+    // Si el producto tiene category_id pero no category, crea el objeto category
+    if (product.category_id && !product.category) {
+      const category = categoriesMap.get(product.category_id);
+      if (category) {
+        normalizedProduct.category = category;
+      } else {
+        // Si no encontramos la categoría, creamos un objeto con la información mínima
+        normalizedProduct.category = { id: product.category_id, name: "Desconocida" };
+      }
+    }
+    
+    // Si el producto tiene brand_id pero no brand, crea el objeto brand
+    if (product.brand_id && !product.brand) {
+      const brand = brandsMap.get(product.brand_id);
+      if (brand) {
+        normalizedProduct.brand = brand;
+      } else {
+        // Si no encontramos la marca, creamos un objeto con la información mínima
+        normalizedProduct.brand = { id: product.brand_id, name: "Desconocida" };
+      }
+    }
+    
+    return normalizedProduct;
+  };
+
+  // Función para cargar los datos
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // Obtener categorías
+      const categoriesResponse = await fetch('http://localhost:8000/catalog/products_category/');
+      if (!categoriesResponse.ok) throw new Error('Error al cargar categorías');
+      const categoriesData = await categoriesResponse.json();
+      
+      // Crear un mapa de categorías para referencia rápida
+      const categoriesMap = new Map();
+      categoriesData.forEach(category => categoriesMap.set(category.id, category));
+      
+      // Obtener marcas
+      const brandsResponse = await fetch('http://localhost:8000/catalog/product_brand/');
+      if (!brandsResponse.ok) throw new Error('Error al cargar marcas');
+      const brandsData = await brandsResponse.json();
+      
+      // Crear un mapa de marcas para referencia rápida
+      const brandsMap = new Map();
+      brandsData.forEach(brand => brandsMap.set(brand.id, brand));
+      
+      // Obtener productos
+      const productsResponse = await fetch('http://localhost:8000/products/');
+      if (!productsResponse.ok) throw new Error('Error al cargar productos');
+      const productsData = await productsResponse.json();
+      
+      // Normalizar la estructura de los productos
+      const normalizedProducts = productsData.map(product => 
+        normalizeProduct(product, categoriesMap, brandsMap)
+      );
+      
+      // Actualizar el estado
+      setProducts(normalizedProducts);
+      setCategories(categoriesData);
+      setBrands(brandsData);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cargar datos al montar el componente
   useEffect(() => {
-    const mockCategories = [
-      { id: 1, name: "Electrónicos", description: "Productos electrónicos y gadgets" },
-      { id: 2, name: "Ropa", description: "Prendas de vestir y accesorios" },
-      { id: 3, name: "Hogar", description: "Artículos para el hogar" },
-    ];
-
-    const mockBrands = [
-      { id: 1, name: "TechPro", description: "Marca líder en tecnología" },
-      { id: 2, name: "FashionStyle", description: "Moda contemporánea" },
-      { id: 3, name: "HomePlus", description: "Todo para tu hogar" },
-    ];
-
-    const mockProducts = [
-      {
-        id: 1,
-        title: "Smartphone XYZ",
-        price: 8999.99,
-        description: "Smartphone de última generación con cámara de alta resolución",
-        image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=2042&auto=format&fit=crop",
-        created_at: new Date().toISOString(),
-        category: mockCategories[0],
-        brand: mockBrands[0],
-      },
-      {
-        id: 2,
-        title: "Camisa Casual",
-        price: 599.99,
-        description: "Camisa casual de algodón para uso diario",
-        image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1976&auto=format&fit=crop",
-        created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-        category: mockCategories[1],
-        brand: mockBrands[1],
-      },
-      {
-        id: 3,
-        title: "Juego de Sartenes",
-        price: 1299.99,
-        description: "Juego de 3 sartenes antiadherentes de alta calidad",
-        image: "https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?q=80&w=1974&auto=format&fit=crop",
-        created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-        category: mockCategories[2],
-        brand: mockBrands[2],
-      },
-    ];
-
-    setCategories(mockCategories);
-    setBrands(mockBrands);
-    setProducts(mockProducts);
+    fetchData();
   }, []);
 
-  const handleCreateProduct = (newProduct) => {
-    const product = {
-      ...newProduct,
-      id: Math.max(0, ...products.map((p) => p.id)) + 1,
-      created_at: new Date().toISOString(),
-    };
-    setProducts([...products, product]);
-    setIsFormOpen(false);
+  const handleCreateProduct = async (newProduct) => {
+    try {
+      const productToCreate = {
+        title: newProduct.title,
+        price: newProduct.price,
+        description: newProduct.description,
+        image: newProduct.image,
+        category_id: parseInt(newProduct.categoryId),
+        brand_id: parseInt(newProduct.brandId)
+      };
+
+      const response = await fetch('http://localhost:8000/products/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productToCreate),
+      });
+
+      if (!response.ok) throw new Error('Error al crear el producto');
+      
+      // Obtener el producto creado
+      const createdProduct = await response.json();
+      
+      // Buscar la categoría y marca completas
+      const category = categories.find(c => c.id === parseInt(newProduct.categoryId));
+      const brand = brands.find(b => b.id === parseInt(newProduct.brandId));
+      
+      // Añadir la categoría y marca completas al producto
+      const completeProduct = {
+        ...createdProduct,
+        category: category || { id: parseInt(newProduct.categoryId), name: "Desconocida" },
+        brand: brand || { id: parseInt(newProduct.brandId), name: "Desconocida" }
+      };
+      
+      setProducts(prev => [...prev, completeProduct]);
+      setIsFormOpen(false);
+    } catch (err) {
+      console.error("Error creating product:", err);
+      alert("Error al crear el producto: " + err.message);
+    }
   };
 
-  const handleUpdateProduct = (updatedProduct) => {
-    setProducts(products.map((product) => (product.id === updatedProduct.id ? updatedProduct : product)));
-    setIsFormOpen(false);
-    setIsEditing(false);
+  const handleUpdateProduct = async (updatedProduct) => {
+    try {
+      const productToUpdate = {
+        title: updatedProduct.title,
+        price: updatedProduct.price,
+        description: updatedProduct.description,
+        image: updatedProduct.image,
+        category_id: parseInt(updatedProduct.categoryId),
+        brand_id: parseInt(updatedProduct.brandId)
+      };
+
+      const response = await fetch(`http://localhost:8000/products/${currentProduct.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productToUpdate),
+      });
+
+      if (!response.ok) throw new Error('Error al actualizar el producto');
+      
+      // Buscar la categoría y marca completas
+      const category = categories.find(c => c.id === parseInt(updatedProduct.categoryId));
+      const brand = brands.find(b => b.id === parseInt(updatedProduct.brandId));
+      
+      // Actualizar el producto en el estado local
+      setProducts(prev => prev.map(product => {
+        if (product.id === currentProduct.id) {
+          return {
+            ...product,
+            ...productToUpdate,
+            category: category || { id: parseInt(updatedProduct.categoryId), name: "Desconocida" },
+            brand: brand || { id: parseInt(updatedProduct.brandId), name: "Desconocida" }
+          };
+        }
+        return product;
+      }));
+      
+      setIsFormOpen(false);
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Error updating product:", err);
+      alert("Error al actualizar el producto: " + err.message);
+    }
   };
 
-  const handleDeleteProduct = () => {
+  const handleDeleteProduct = async () => {
     if (currentProduct) {
-      setProducts(products.filter((product) => product.id !== currentProduct.id));
-      setIsDeleteOpen(false);
-      setCurrentProduct(null);
+      try {
+        const response = await fetch(`http://localhost:8000/products/${currentProduct.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) throw new Error('Error al eliminar el producto');
+        
+        setProducts(products.filter((product) => product.id !== currentProduct.id));
+        setIsDeleteOpen(false);
+        setCurrentProduct(null);
+      } catch (err) {
+        console.error("Error deleting product:", err);
+        alert("Error al eliminar el producto: " + err.message);
+      }
     }
   };
 
@@ -107,6 +225,17 @@ export default function ProductManager() {
     setCurrentProduct(product);
     setIsDeleteOpen(true);
   };
+
+  if (loading) return <div className="text-center py-10">Cargando...</div>;
+  
+  if (error) return (
+    <div className="text-center py-10 text-red-500">
+      Error: {error}
+      <div className="mt-4">
+        <Button onClick={fetchData}>Reintentar</Button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -135,13 +264,17 @@ export default function ProductManager() {
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onSubmit={isEditing ? handleUpdateProduct : handleCreateProduct}
-        product={isEditing ? currentProduct : null}
+        product={currentProduct}
         isEditing={isEditing}
         categories={categories}
         brands={brands}
       />
 
-      <ProductDetails isOpen={isDetailsOpen} onClose={() => setIsDetailsOpen(false)} product={currentProduct} />
+      <ProductDetails 
+        isOpen={isDetailsOpen} 
+        onClose={() => setIsDetailsOpen(false)} 
+        product={currentProduct} 
+      />
 
       <DeleteConfirmation
         isOpen={isDeleteOpen}

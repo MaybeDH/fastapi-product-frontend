@@ -108,7 +108,8 @@ export default function TaskManager({ allTasks }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Tareas</h1>
         <Button
           onClick={() => {
             setIsEditing(false)
