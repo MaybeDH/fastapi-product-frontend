@@ -12,7 +12,6 @@ export default async function CategoriesPage() {
     )
   
     const data = await resp.json();
-    console.log({ resp, data });
   return (
 
 

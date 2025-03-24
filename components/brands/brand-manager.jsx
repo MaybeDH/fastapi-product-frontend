@@ -9,7 +9,7 @@ import BrandDetails from "./brand-details";
 import DeleteConfirmation from "../ui/delete-confirmation";
 
 
-export default function BrandManager() {
+export default function BrandManager({allBrands}) {
   const [brands, setBrands] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
@@ -20,7 +20,7 @@ export default function BrandManager() {
   // Simulate fetching brands from an API
   useEffect(() => {
     // Mock brands
-    const mockBrands = [
+    /* const mockBrands = [
       {
         id: 1,
         name: "TechPro",
@@ -42,32 +42,64 @@ export default function BrandManager() {
         created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
       },
-    ]
+    ] */
+   
+    setBrands(allBrands)
+  }, [allBrands])
 
-    setBrands(mockBrands)
-  }, [])
-
-  const handleCreateBrand = (newBrand) => {
+  const handleCreateBrand = async(newBrand) => {
     const brand = {
       ...newBrand,
       id: Math.max(0, ...brands.map((b) => b.id)) + 1,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
+    const brandToCreate = {
+      name: brand.name,
+      description: brand.description,
+    }
+    await fetch(`http://localhost:8000/catalog/product_brand/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(brandToCreate),
+      }
+    )
     setBrands([...brands, brand])
     setIsFormOpen(false)
   }
 
-  const handleUpdateBrand = (updatedBrand) => {
+  const handleUpdateBrand = async(updatedBrand) => {
+
+    await fetch(`http://localhost:8000/catalog/product_brand/${updatedBrand.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedBrand),
+      }
+    )
     setBrands(
-      brands.map((brand) => (brand.id === updatedBrand.id ? updatedBrand : brand))
+      brands.map((brand) => 
+        (brand.id === updatedBrand.id ?{ ...updatedBrand, updated_at: new Date().toISOString()} : brand))
     )
     setIsFormOpen(false)
     setIsEditing(false)
   }
 
-  const handleDeleteBrand = () => {
+  const handleDeleteBrand = async() => {
     if (currentBrand) {
+      await fetch(`http://localhost:8000/catalog/product_brand/${currentBrand.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
       setBrands(brands.filter((brand) => brand.id !== currentBrand.id))
       setIsDeleteOpen(false)
       setCurrentBrand(null)
