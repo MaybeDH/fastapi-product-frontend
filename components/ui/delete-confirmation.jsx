@@ -30,7 +30,7 @@ export default function DeleteConfirmation({
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            className="bg-destructive text-white hover:bg-destructive/90">
             Eliminar
           </AlertDialogAction>
         </AlertDialogFooter>

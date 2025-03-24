@@ -8,7 +8,7 @@ import CategoryForm from "./category-form"
 import CategoryDetails from "./category-details"
 import DeleteConfirmation from "../ui/delete-confirmation";
 
-export default function CategoryManager() {
+export default function CategoryManager({allCategories}) {
   const [categories, setCategories] = useState([])
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
@@ -19,7 +19,7 @@ export default function CategoryManager() {
   // Simulate fetching categories from an API
   useEffect(() => {
     // Mock categories
-    const mockCategories = [
+    /* const mockCategories = [
       {
         id: 1,
         name: "Electrónicos",
@@ -41,33 +41,64 @@ export default function CategoryManager() {
         created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
       },
-    ]
+    ] */
 
-    setCategories(mockCategories)
-  }, [])
+    setCategories(allCategories)
+  }, [allCategories])
 
-  const handleCreateCategory = (newCategory) => {
+  const handleCreateCategory = async(newCategory) => {
     const category = {
       ...newCategory,
       id: Math.max(0, ...categories.map((c) => c.id)) + 1,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
+    const categoryToCreate = {
+      name: category.name,
+      description: category.description,
+    }
+    await fetch(`http://localhost:8000/catalog/products_category/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(categoryToCreate),
+      }
+    )
     setCategories([...categories, category])
     setIsFormOpen(false)
   }
 
-  const handleUpdateCategory = (updatedCategory) => {
-    setCategories(categories.map(
-      (category) => (category.id === updatedCategory.id ? updatedCategory : category)
+  const handleUpdateCategory = async(updatedCategory) => {
+    await fetch(`http://localhost:8000/catalog/products_category/${updatedCategory.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedCategory),
+      }
+    )
+    setCategories(categories.map((category) => 
+      (category.id === updatedCategory.id ? {...updatedCategory,updated_at : new Date().toISOString()} : category)
     ))
     setIsFormOpen(false)
     setIsEditing(false)
   }
 
-  const handleDeleteCategory = () => {
+  const handleDeleteCategory = async() => {
     if (currentCategory) {
-      setCategories(categories.filter((category) => category.id !== currentCategory.id))
+      await fetch(`http://localhost:8000/catalog/products_category/${currentCategory.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      setCategories(categories.filter((category) => 
+        category.id !== currentCategory.id))
       setIsDeleteOpen(false)
       setCurrentCategory(null)
     }
