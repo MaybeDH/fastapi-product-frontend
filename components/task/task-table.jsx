@@ -6,7 +6,7 @@ import { Edit, Trash2, Eye } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
-export default function TaskTable({
+export function TaskTable({
   tasks,
   onViewTask,
   onEditTask,

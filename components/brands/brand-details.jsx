@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
-export default function BrandDetails({
+export function BrandDetails({
   isOpen,
   onClose,
   brand

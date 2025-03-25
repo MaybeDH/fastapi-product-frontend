@@ -3,12 +3,11 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, Mail, User } from "lucide-react";
 //import EditProfileForm from "./edit-profile-form";
 
-export default function UserProfile() {
+export function UserProfile() {
   const [user, setUser] = useState({
     username: "",
     email: "usuario@ejemplo.com",

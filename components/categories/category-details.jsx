@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
-export default function CategoryDetails({
+export function CategoryDetails({
   isOpen,
   onClose,
   category

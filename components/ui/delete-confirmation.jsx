@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-export default function DeleteConfirmation({
+export function DeleteConfirmation({
   isOpen,
   onClose,
   onConfirm,

@@ -1,4 +1,4 @@
-import CategoryManager from "@/components/categories/category-manager";
+import { CategoryManager } from "@/components/categories/category-manager";
 
 export default async function CategoriesPage() {
   const resp = await fetch("http://localhost:8000/catalog/products_category/", {

@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Package } from "lucide-react";
 
-export default function ProductDetails({ isOpen, onClose, product }) {
+export function ProductDetails({ isOpen, onClose, product }) {
   if (!product) return null;
 
   const formatDate = (dateString) => {

@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import ProductTable from "./product-table";
-import ProductForm from "./product-form";
-import ProductDetails from "./product-details";
-import DeleteConfirmation from "@/components/ui/delete-confirmation";
+import { ProductTable } from "./product-table";
+import { ProductForm } from "./product-form";
+import { ProductDetails } from "./product-details";
+import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
 
-export default function ProductManager() {
+export function ProductManager() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
@@ -23,7 +23,7 @@ export default function ProductManager() {
   const normalizeProduct = (product, categoriesMap, brandsMap) => {
     // Asegúrate de que el producto tiene la estructura correcta
     const normalizedProduct = { ...product };
-    
+
     // Si el producto tiene category_id pero no category, crea el objeto category
     if (product.category_id && !product.category) {
       const category = categoriesMap.get(product.category_id);
@@ -31,10 +31,13 @@ export default function ProductManager() {
         normalizedProduct.category = category;
       } else {
         // Si no encontramos la categoría, creamos un objeto con la información mínima
-        normalizedProduct.category = { id: product.category_id, name: "Desconocida" };
+        normalizedProduct.category = {
+          id: product.category_id,
+          name: "Desconocida",
+        };
       }
     }
-    
+
     // Si el producto tiene brand_id pero no brand, crea el objeto brand
     if (product.brand_id && !product.brand) {
       const brand = brandsMap.get(product.brand_id);
@@ -45,7 +48,7 @@ export default function ProductManager() {
         normalizedProduct.brand = { id: product.brand_id, name: "Desconocida" };
       }
     }
-    
+
     return normalizedProduct;
   };
 
@@ -54,33 +57,39 @@ export default function ProductManager() {
     setLoading(true);
     try {
       // Obtener categorías
-      const categoriesResponse = await fetch('http://localhost:8000/catalog/products_category/');
-      if (!categoriesResponse.ok) throw new Error('Error al cargar categorías');
+      const categoriesResponse = await fetch(
+        "http://localhost:8000/catalog/products_category/"
+      );
+      if (!categoriesResponse.ok) throw new Error("Error al cargar categorías");
       const categoriesData = await categoriesResponse.json();
-      
+
       // Crear un mapa de categorías para referencia rápida
       const categoriesMap = new Map();
-      categoriesData.forEach(category => categoriesMap.set(category.id, category));
-      
+      categoriesData.forEach((category) =>
+        categoriesMap.set(category.id, category)
+      );
+
       // Obtener marcas
-      const brandsResponse = await fetch('http://localhost:8000/catalog/product_brand/');
-      if (!brandsResponse.ok) throw new Error('Error al cargar marcas');
+      const brandsResponse = await fetch(
+        "http://localhost:8000/catalog/product_brand/"
+      );
+      if (!brandsResponse.ok) throw new Error("Error al cargar marcas");
       const brandsData = await brandsResponse.json();
-      
+
       // Crear un mapa de marcas para referencia rápida
       const brandsMap = new Map();
-      brandsData.forEach(brand => brandsMap.set(brand.id, brand));
-      
+      brandsData.forEach((brand) => brandsMap.set(brand.id, brand));
+
       // Obtener productos
-      const productsResponse = await fetch('http://localhost:8000/products/');
-      if (!productsResponse.ok) throw new Error('Error al cargar productos');
+      const productsResponse = await fetch("http://localhost:8000/products/");
+      if (!productsResponse.ok) throw new Error("Error al cargar productos");
       const productsData = await productsResponse.json();
-      
+
       // Normalizar la estructura de los productos
-      const normalizedProducts = productsData.map(product => 
+      const normalizedProducts = productsData.map((product) =>
         normalizeProduct(product, categoriesMap, brandsMap)
       );
-      
+
       // Actualizar el estado
       setProducts(normalizedProducts);
       setCategories(categoriesData);
@@ -107,34 +116,42 @@ export default function ProductManager() {
         description: newProduct.description,
         image: newProduct.image,
         category_id: parseInt(newProduct.categoryId),
-        brand_id: parseInt(newProduct.brandId)
+        brand_id: parseInt(newProduct.brandId),
       };
 
-      const response = await fetch('http://localhost:8000/products/', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/products/", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(productToCreate),
       });
 
-      if (!response.ok) throw new Error('Error al crear el producto');
-      
+      if (!response.ok) throw new Error("Error al crear el producto");
+
       // Obtener el producto creado
       const createdProduct = await response.json();
-      
+
       // Buscar la categoría y marca completas
-      const category = categories.find(c => c.id === parseInt(newProduct.categoryId));
-      const brand = brands.find(b => b.id === parseInt(newProduct.brandId));
-      
+      const category = categories.find(
+        (c) => c.id === parseInt(newProduct.categoryId)
+      );
+      const brand = brands.find((b) => b.id === parseInt(newProduct.brandId));
+
       // Añadir la categoría y marca completas al producto
       const completeProduct = {
         ...createdProduct,
-        category: category || { id: parseInt(newProduct.categoryId), name: "Desconocida" },
-        brand: brand || { id: parseInt(newProduct.brandId), name: "Desconocida" }
+        category: category || {
+          id: parseInt(newProduct.categoryId),
+          name: "Desconocida",
+        },
+        brand: brand || {
+          id: parseInt(newProduct.brandId),
+          name: "Desconocida",
+        },
       };
-      
-      setProducts(prev => [...prev, completeProduct]);
+
+      setProducts((prev) => [...prev, completeProduct]);
       setIsFormOpen(false);
     } catch (err) {
       console.error("Error creating product:", err);
@@ -150,36 +167,51 @@ export default function ProductManager() {
         description: updatedProduct.description,
         image: updatedProduct.image,
         category_id: parseInt(updatedProduct.categoryId),
-        brand_id: parseInt(updatedProduct.brandId)
+        brand_id: parseInt(updatedProduct.brandId),
       };
 
-      const response = await fetch(`http://localhost:8000/products/${currentProduct.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productToUpdate),
-      });
-
-      if (!response.ok) throw new Error('Error al actualizar el producto');
-      
-      // Buscar la categoría y marca completas
-      const category = categories.find(c => c.id === parseInt(updatedProduct.categoryId));
-      const brand = brands.find(b => b.id === parseInt(updatedProduct.brandId));
-      
-      // Actualizar el producto en el estado local
-      setProducts(prev => prev.map(product => {
-        if (product.id === currentProduct.id) {
-          return {
-            ...product,
-            ...productToUpdate,
-            category: category || { id: parseInt(updatedProduct.categoryId), name: "Desconocida" },
-            brand: brand || { id: parseInt(updatedProduct.brandId), name: "Desconocida" }
-          };
+      const response = await fetch(
+        `http://localhost:8000/products/${currentProduct.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(productToUpdate),
         }
-        return product;
-      }));
-      
+      );
+
+      if (!response.ok) throw new Error("Error al actualizar el producto");
+
+      // Buscar la categoría y marca completas
+      const category = categories.find(
+        (c) => c.id === parseInt(updatedProduct.categoryId)
+      );
+      const brand = brands.find(
+        (b) => b.id === parseInt(updatedProduct.brandId)
+      );
+
+      // Actualizar el producto en el estado local
+      setProducts((prev) =>
+        prev.map((product) => {
+          if (product.id === currentProduct.id) {
+            return {
+              ...product,
+              ...productToUpdate,
+              category: category || {
+                id: parseInt(updatedProduct.categoryId),
+                name: "Desconocida",
+              },
+              brand: brand || {
+                id: parseInt(updatedProduct.brandId),
+                name: "Desconocida",
+              },
+            };
+          }
+          return product;
+        })
+      );
+
       setIsFormOpen(false);
       setIsEditing(false);
     } catch (err) {
@@ -191,16 +223,21 @@ export default function ProductManager() {
   const handleDeleteProduct = async () => {
     if (currentProduct) {
       try {
-        const response = await fetch(`http://localhost:8000/products/${currentProduct.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          `http://localhost:8000/products/${currentProduct.id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-        if (!response.ok) throw new Error('Error al eliminar el producto');
-        
-        setProducts(products.filter((product) => product.id !== currentProduct.id));
+        if (!response.ok) throw new Error("Error al eliminar el producto");
+
+        setProducts(
+          products.filter((product) => product.id !== currentProduct.id)
+        );
         setIsDeleteOpen(false);
         setCurrentProduct(null);
       } catch (err) {
@@ -227,15 +264,16 @@ export default function ProductManager() {
   };
 
   if (loading) return <div className="text-center py-10">Cargando...</div>;
-  
-  if (error) return (
-    <div className="text-center py-10 text-red-500">
-      Error: {error}
-      <div className="mt-4">
-        <Button onClick={fetchData}>Reintentar</Button>
+
+  if (error)
+    return (
+      <div className="text-center py-10 text-red-500">
+        Error: {error}
+        <div className="mt-4">
+          <Button onClick={fetchData}>Reintentar</Button>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <div className="space-y-6">
@@ -270,10 +308,10 @@ export default function ProductManager() {
         brands={brands}
       />
 
-      <ProductDetails 
-        isOpen={isDetailsOpen} 
-        onClose={() => setIsDetailsOpen(false)} 
-        product={currentProduct} 
+      <ProductDetails
+        isOpen={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+        product={currentProduct}
       />
 
       <DeleteConfirmation

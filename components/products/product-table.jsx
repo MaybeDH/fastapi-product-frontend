@@ -13,7 +13,12 @@ import { Edit, Trash2, Eye, Package } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-const ProductTable = ({ products, onViewProduct, onEditProduct, onDeleteProduct }) => {
+export const ProductTable = ({
+  products,
+  onViewProduct,
+  onEditProduct,
+  onDeleteProduct,
+}) => {
   const formatDate = (dateString) =>
     format(new Date(dateString), "dd MMM yyyy", { locale: es });
 
@@ -40,7 +45,10 @@ const ProductTable = ({ products, onViewProduct, onEditProduct, onDeleteProduct 
         <TableBody>
           {products.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
+              <TableCell
+                colSpan={7}
+                className="text-center py-10 text-muted-foreground"
+              >
                 No hay productos disponibles
               </TableCell>
             </TableRow>
@@ -72,8 +80,12 @@ const ProductTable = ({ products, onViewProduct, onEditProduct, onDeleteProduct 
                 <TableCell className="hidden md:table-cell">
                   <Badge variant="outline">{product.category.name}</Badge>
                 </TableCell>
-                <TableCell className="hidden md:table-cell">{product.brand.name}</TableCell>
-                <TableCell className="hidden md:table-cell">{formatDate(product.created_at)}</TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {product.brand.name}
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {formatDate(product.created_at)}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button
@@ -120,5 +132,3 @@ const ProductTable = ({ products, onViewProduct, onEditProduct, onDeleteProduct 
     </div>
   );
 };
-
-export default ProductTable;
