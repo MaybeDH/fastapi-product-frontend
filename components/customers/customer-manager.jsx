@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { CustomerTable } from "./customer-table";
 import { CustomerForm } from "./customer-form";
 import { CustomerDetails } from "./customer-dateils";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
+
 export function CustomerManager() {
   const [customers, setCustomers] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -14,6 +16,8 @@ export function CustomerManager() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCustomers = async () => {
