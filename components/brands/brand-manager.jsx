@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { BrandTable } from "./brand-table";
@@ -9,42 +9,12 @@ import { BrandDetails } from "./brand-details";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
 
 export const BrandManager = ({ allBrands }) => {
-  const [brands, setBrands] = useState([]);
+  const [brands, setBrands] = useState(allBrands);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentBrand, setCurrentBrand] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-
-  // Simulate fetching brands from an API
-  useEffect(() => {
-    // Mock brands
-    /* const mockBrands = [
-      {
-        id: 1,
-        name: "TechPro",
-        description: "Marca líder en tecnología",
-        created_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: 2,
-        name: "FashionStyle",
-        description: "Moda contemporánea",
-        created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: 3,
-        name: "HomePlus",
-        description: "Todo para tu hogar",
-        created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ] */
-
-    setBrands(allBrands);
-  }, [allBrands]);
 
   const handleCreateBrand = async (newBrand) => {
     const brand = {
