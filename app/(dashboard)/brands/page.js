@@ -10,7 +10,7 @@ export default async function Page() {
   const data = await resp.json();
   return (
     <div className="container mx-auto p-4 md:p-6 lg:p-8 overflow-x-auto">
-      {/* <BrandManager allBrands={data} /> */}
+      <BrandManager allBrands={data} />
     </div>
   );
 }
