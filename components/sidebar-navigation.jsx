@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   CheckSquare,
   Package,
@@ -17,7 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-} from "lucide-react"
+} from "lucide-react";
 
 const navItems = [
   {
@@ -50,54 +50,66 @@ const navItems = [
     href: "/profile",
     icon: User,
   },
-]
+];
 
 export function SidebarNavigation() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   // Verificar si el usuario está autenticado
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"
-    setIsAuthenticated(isLoggedIn)
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsAuthenticated(isLoggedIn);
 
     // Guardar el estado del sidebar en localStorage
-    const savedSidebarState = localStorage.getItem("sidebarCollapsed")
+    const savedSidebarState = localStorage.getItem("sidebarCollapsed");
     if (savedSidebarState) {
-      setIsCollapsed(savedSidebarState === "true")
+      setIsCollapsed(savedSidebarState === "true");
     }
-  }, [])
+  }, []);
 
   // Guardar el estado del sidebar cuando cambia
   useEffect(() => {
-    localStorage.setItem("sidebarCollapsed", isCollapsed.toString())
-  }, [isCollapsed])
+    localStorage.setItem("sidebarCollapsed", isCollapsed.toString());
+  }, [isCollapsed]);
 
-  const handleLogout = () => {
-    // Simular cierre de sesión
-    localStorage.removeItem("isLoggedIn")
-    localStorage.removeItem("username")
-    localStorage.removeItem("firstName")
-    localStorage.removeItem("lastName")
-    localStorage.removeItem("avatar")
+  const handleLogout = async () => {
+    const accessToken = localStorage.getItem("accessToken"); // 1. "token" -> "accessToken"  2. "" -> no tienes nada
 
-    setIsAuthenticated(false)
+    if (!accessToken) {
+      return;
+    }
+
+    const response = await fetch("http://localhost:8000/auth/logout", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
+      },
+      body: "",
+    });
+
+    const data = await response.json();
+
+    console.log(data.msg);
+    localStorage.clear();
+
+    setIsAuthenticated(false);
 
     // Redirigir a la página de inicio
-    router.push("/")
-  }
+    router.push("/");
+  };
 
- /*  // Si el usuario no está autenticado, no mostrar el sidebar
+  /*  // Si el usuario no está autenticado, no mostrar el sidebar
   if (!isAuthenticated) {
     return null
   } */
 
   return (
     <>
-
       {/* Mobile menu button */}
       <Button
         variant="ghost"
@@ -105,7 +117,11 @@ export function SidebarNavigation() {
         className="md:hidden fixed top-4 left-4 z-50"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
-        {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        {isSidebarOpen ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <Menu className="h-6 w-6" />
+        )}
       </Button>
 
       {/* Sidebar backdrop for mobile */}
@@ -120,8 +136,10 @@ export function SidebarNavigation() {
       <div
         className={cn(
           "fixed top-16 bottom-0 left-0 z-40 border-r bg-background transition-all duration-300 ease-in-out",
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-          isCollapsed ? "w-20" : "w-64",
+          isSidebarOpen
+            ? "translate-x-0"
+            : "-translate-x-full md:translate-x-0",
+          isCollapsed ? "w-20" : "w-64"
         )}
       >
         <div className="flex h-16 items-center border-b px-6 justify-between">
@@ -132,29 +150,44 @@ export function SidebarNavigation() {
             </Link>
           )}
           {isCollapsed && <CheckSquare className="h-6 w-6 mx-auto" />}
-          <Button variant="ghost" size="icon" className="hidden md:flex" onClick={() => setIsCollapsed(!isCollapsed)}>
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden md:flex"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
           </Button>
         </div>
         <div className="flex flex-col justify-between h-[calc(100%-4rem)]">
           <nav className="flex flex-col gap-1 p-4">
             {navItems.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href;
               return (
-                <Link key={item.href} href={item.href} onClick={() => setIsSidebarOpen(false)}>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
                   <Button
                     variant={isActive ? "secondary" : "ghost"}
                     className={cn(
                       "w-full justify-start",
                       isActive ? "bg-secondary" : "",
-                      isCollapsed ? "justify-center px-2" : "",
+                      isCollapsed ? "justify-center px-2" : ""
                     )}
                   >
-                    <item.icon className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-2")} />
+                    <item.icon
+                      className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-2")}
+                    />
                     {!isCollapsed && <span>{item.title}</span>}
                   </Button>
                 </Link>
-              )
+              );
             })}
           </nav>
 
@@ -164,11 +197,13 @@ export function SidebarNavigation() {
               variant="ghost"
               className={cn(
                 "w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10",
-                isCollapsed ? "justify-center px-2" : "",
+                isCollapsed ? "justify-center px-2" : ""
               )}
               onClick={handleLogout}
             >
-              <LogOut className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-2")} />
+              <LogOut
+                className={cn("h-5 w-5", isCollapsed ? "mx-0" : "mr-2")}
+              />
               {!isCollapsed && <span>Cerrar Sesión</span>}
             </Button>
           </div>
@@ -179,10 +214,9 @@ export function SidebarNavigation() {
       <div
         className={cn(
           "hidden md:block flex-shrink-0 transition-all duration-300 ease-in-out",
-          isCollapsed ? "w-20" : "w-64",
+          isCollapsed ? "w-20" : "w-64"
         )}
       />
     </>
-  )
+  );
 }
-
