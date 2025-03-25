@@ -1,18 +1,29 @@
 "use client";
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, Loader2 } from "lucide-react"
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { AlertCircle, Loader2 } from "lucide-react";
+import { getToken } from "@/lib/get-token";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SignupForm() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -20,47 +31,47 @@ export default function SignupForm() {
     last_name: "",
     password: "",
     confirm_password: "",
-  })
+  });
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
-    if (error) setError(null)
-  }
+    if (error) setError(null);
+  };
 
   const validateForm = () => {
     // Check for empty fields
     for (const [key, value] of Object.entries(formData)) {
       if (!value.trim()) {
-        setError(`El campo ${getFieldLabel(key)} es obligatorio`)
-        return false
+        setError(`El campo ${getFieldLabel(key)} es obligatorio`);
+        return false;
       }
     }
 
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError("El formato del correo electrónico no es válido")
-      return false
+      setError("El formato del correo electrónico no es válido");
+      return false;
     }
 
     // Check password length
     if (formData.password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres")
-      return false
+      setError("La contraseña debe tener al menos 6 caracteres");
+      return false;
     }
 
     // Check if passwords match
     if (formData.password !== formData.confirm_password) {
-      setError("Las contraseñas no coinciden")
-      return false
+      setError("Las contraseñas no coinciden");
+      return false;
     }
 
-    return true
-  }
+    return true;
+  };
 
-  const getFieldLabel = fieldName => {
+  const getFieldLabel = (fieldName) => {
     const labels = {
       username: "Usuario",
       email: "Correo electrónico",
@@ -68,53 +79,77 @@ export default function SignupForm() {
       last_name: "Apellido",
       password: "Contraseña",
       confirm_password: "Confirmar contraseña",
-    }
-    return labels[fieldName] || fieldName
-  }
+    };
+    return labels[fieldName] || fieldName;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm()) {
-      return
+      return;
     }
 
     try {
-      setIsLoading(true)
-      setError(null)
+      setIsLoading(true);
+      setError(null);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      if (formData.password !== formData.confirm_password) {
+        setError("Las contraseñas no coinciden");
+        return;
+      }
 
-      // For demo purposes, let's just simulate a successful registration
-      console.log("Usuario registrado:", {
+      const newUser = {
         username: formData.username,
         email: formData.email,
         first_name: formData.first_name,
         last_name: formData.last_name,
-      })
+        password: formData.password,
+      };
 
-      // Guardar información del usuario en localStorage
-      localStorage.setItem("isLoggedIn", "true")
-      localStorage.setItem("username", formData.username)
-      localStorage.setItem("firstName", formData.first_name)
-      localStorage.setItem("lastName", formData.last_name)
+      const resp = await fetch("http://localhost:8000/auth/users/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
 
-      // Redirect to home page after successful registration
-      router.push("/")
+      const data = await resp.json();
+
+      if (!data.id) {
+        setError("Error al registrar usuario");
+        return;
+      }
+
+      const token = await getToken(formData.username, formData.password);
+
+      if (!token.success) {
+        setError("Error al crear un token de acceso");
+        return;
+      }
+
+      router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al registrar usuario")
+      setError(
+        err instanceof Error ? err.message : "Error al registrar usuario"
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-[80vh]">
       <Card className="w-full max-w-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Crear Cuenta</CardTitle>
-          <CardDescription className="text-center">Ingrese sus datos para registrarse en el sistema</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center">
+            Crear Cuenta
+          </CardTitle>
+          <CardDescription className="text-center">
+            Ingrese sus datos para registrarse en el sistema
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -135,7 +170,8 @@ export default function SignupForm() {
                   placeholder="Ingrese su nombre"
                   value={formData.first_name}
                   onChange={handleChange}
-                  disabled={isLoading} />
+                  disabled={isLoading}
+                />
               </div>
 
               <div className="space-y-2">
@@ -147,7 +183,8 @@ export default function SignupForm() {
                   placeholder="Ingrese su apellido"
                   value={formData.last_name}
                   onChange={handleChange}
-                  disabled={isLoading} />
+                  disabled={isLoading}
+                />
               </div>
             </div>
 
@@ -161,7 +198,8 @@ export default function SignupForm() {
                 value={formData.username}
                 onChange={handleChange}
                 disabled={isLoading}
-                autoComplete="username" />
+                autoComplete="username"
+              />
             </div>
 
             <div className="space-y-2">
@@ -174,7 +212,8 @@ export default function SignupForm() {
                 value={formData.email}
                 onChange={handleChange}
                 disabled={isLoading}
-                autoComplete="email" />
+                autoComplete="email"
+              />
             </div>
 
             <div className="space-y-2">
@@ -187,7 +226,8 @@ export default function SignupForm() {
                 value={formData.password}
                 onChange={handleChange}
                 disabled={isLoading}
-                autoComplete="new-password" />
+                autoComplete="new-password"
+              />
             </div>
 
             <div className="space-y-2">
@@ -200,7 +240,8 @@ export default function SignupForm() {
                 value={formData.confirm_password}
                 onChange={handleChange}
                 disabled={isLoading}
-                autoComplete="new-password" />
+                autoComplete="new-password"
+              />
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
@@ -227,4 +268,3 @@ export default function SignupForm() {
     </div>
   );
 }
-
