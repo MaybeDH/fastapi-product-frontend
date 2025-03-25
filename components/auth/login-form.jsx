@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, Loader2 } from "lucide-react"
+import { getToken } from "@/lib/get-token"
 
 export function LoginForm() {
   const router = useRouter()
@@ -48,38 +49,11 @@ export function LoginForm() {
       setIsLoading(true)
       setError(null)
 
-      const urlEncodedData = new URLSearchParams();
-      urlEncodedData.append("grant_type", "password");
-      urlEncodedData.append("username", formData.username);
-      urlEncodedData.append("password", formData.password);
-      urlEncodedData.append("scope", "");
-      urlEncodedData.append("client_id", "string");
-      urlEncodedData.append("client_secret", "string");
-
-      const resp = await fetch("http://localhost:8000/auth/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Accept": "application/json",
-        },
-        body: urlEncodedData.toString(),
-      });
-
-      const data = await resp.json();
+      const resp = await getToken(formData.username, formData.password)
 
       // TODO: migrate to cookies, handle refresh token
 
-      // resp succesfully
-      //   {
-      //     "data": {
-      //         "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYXlhbmEiLCJpZCI6MywiZW1haWwiOiJkYXlhbmFAZ21haWwuY29tIiwiZXhwIjoxNzQyOTE1NDk1fQ.4if7qA2HR8s6wLmFEfj7y12-WaADBrIWSQa1OkCWq9s",
-      //         "token_type": "bearer",
-      //         "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYXlhbmEiLCJpZCI6MywiZW1haWwiOiJkYXlhbmFAZ21haWwuY29tIiwiZXhwIjoxNzQzNTE4NDk1fQ.Xol9O3qCag_4ieuG-LVtM-fXCbt3nZzBdS2TVFmbpog"
-      //     }
-      // }
-
-      if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
+      if (resp.success) {
         router.push("/products");
       } else {
         throw new Error("Credenciales inválidas")

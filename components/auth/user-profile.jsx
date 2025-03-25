@@ -1,10 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, Mail, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 //import EditProfileForm from "./edit-profile-form";
 
 export function UserProfile() {
@@ -21,18 +28,49 @@ export function UserProfile() {
   });
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
-  // Cargar datos del usuario desde localStorage
-  useEffect(() => {
-    const username = localStorage.getItem("username") || "usuario_ejemplo";
-    const firstName = localStorage.getItem("firstName") || "Juan";
-    const lastName = localStorage.getItem("lastName") || "Pérez";
+  const router = useRouter();
 
-    setUser((prev) => ({
-      ...prev,
-      username,
-      first_name: firstName,
-      last_name: lastName,
-    }));
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        // Redirect to login page if no token
+        router.push("/login");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8000/auth/users/me/", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+
+        const userData = await response.json();
+
+        console.log("User data:", userData);
+
+        setUser((prev) => ({
+          ...prev,
+          username: userData.username,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          email: userData.email,
+        }));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // Optionally redirect to login or show an error message
+        router.push("/login");
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const getInitials = (firstName, lastName) => {
@@ -62,14 +100,21 @@ export function UserProfile() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.avatar} alt={`${user.first_name} ${user.last_name}`} />
-                <AvatarFallback className="text-lg">{getInitials(user.first_name, user.last_name)}</AvatarFallback>
+                <AvatarImage
+                  src={user.avatar}
+                  alt={`${user.first_name} ${user.last_name}`}
+                />
+                <AvatarFallback className="text-lg">
+                  {getInitials(user.first_name, user.last_name)}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <CardTitle className="text-2xl">
                   {user.first_name} {user.last_name}
                 </CardTitle>
-                <CardDescription className="text-base">@{user.username}</CardDescription>
+                <CardDescription className="text-base">
+                  @{user.username}
+                </CardDescription>
               </div>
             </div>
             {/* <Button onClick={() => setIsEditFormOpen(true)}>Editar perfil</Button> */}
@@ -118,10 +163,14 @@ export function UserProfile() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Tareas completadas</CardTitle>
+                    <CardTitle className="text-lg">
+                      Tareas completadas
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">{user.tasks_completed}</div>
+                    <div className="text-3xl font-bold">
+                      {user.tasks_completed}
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -129,7 +178,9 @@ export function UserProfile() {
                     <CardTitle className="text-lg">Tareas pendientes</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold">{user.tasks_pending}</div>
+                    <div className="text-3xl font-bold">
+                      {user.tasks_pending}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
