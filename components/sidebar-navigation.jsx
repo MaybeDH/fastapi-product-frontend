@@ -52,7 +52,7 @@ const navItems = [
   },
 ]
 
-export default function SidebarNavigation() {
+export function SidebarNavigation() {
   const pathname = usePathname()
   const router = useRouter()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)

@@ -1,4 +1,4 @@
-import SidebarNavigation from "@/components/sidebar-navigation";
+import { SidebarNavigation } from "@/components/sidebar-navigation";
 
 export default function DashboardLayout({ children }) {
   return (
