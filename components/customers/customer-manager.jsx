@@ -15,64 +15,51 @@ export function CustomerManager() {
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Simulate fetching customers from an API
   useEffect(() => {
-    // Mock customers
-    const mockCustomers = [
-      {
-        id: 1,
-        name: "Juan",
-        last_name: "Pérez",
-        description: "Cliente frecuente de productos electrónicos",
-        email: "juan.perez@ejemplo.com",
-        age: 35,
-        created_at: new Date(
-          Date.now() - 30 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        updated_at: new Date(
-          Date.now() - 5 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-      },
-      {
-        id: 2,
-        name: "María",
-        last_name: "González",
-        description: "Prefiere productos de hogar",
-        email: "maria.gonzalez@ejemplo.com",
-        age: 42,
-        created_at: new Date(
-          Date.now() - 60 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        updated_at: new Date(
-          Date.now() - 15 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-      },
-      {
-        id: 3,
-        name: "Carlos",
-        last_name: "Rodríguez",
-        description: "Cliente nuevo, interesado en ropa",
-        email: "carlos.rodriguez@ejemplo.com",
-        age: 28,
-        created_at: new Date(
-          Date.now() - 10 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-        updated_at: new Date(
-          Date.now() - 10 * 24 * 60 * 60 * 1000
-        ).toISOString(),
-      },
-    ];
+    const fetchCustomers = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        // Redirect to login page if no token
+        router.push("/login");
+        return;
+      }
 
-    setCustomers(mockCustomers);
+      try {
+        const response = await fetch("http://localhost:8000/customers/", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const data = await response.json();
+
+        setCustomers(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // Optionally redirect to login or show an error message
+        router.push("/login");
+      }
+    };
+
+    fetchCustomers();
   }, []);
 
-  const handleCreateCustomer = (newCustomer) => {
-    const customer = {
-      ...newCustomer,
-      id: Math.max(0, ...customers.map((c) => c.id)) + 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+  const handleCreateCustomer = async (newCustomer) => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    const response = await fetch("http://localhost:8000/customers/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(newCustomer),
+    });
+
+    const customer = await response.json();
+
     setCustomers([...customers, customer]);
     setIsFormOpen(false);
   };
