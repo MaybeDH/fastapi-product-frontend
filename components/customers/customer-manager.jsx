@@ -52,20 +52,41 @@ export function CustomerManager() {
 
   const handleCreateCustomer = async (newCustomer) => {
     const accessToken = localStorage.getItem("accessToken");
-
-    const response = await fetch("http://localhost:8000/customers/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(newCustomer),
-    });
-
-    const customer = await response.json();
-
-    setCustomers([...customers, customer]);
-    setIsFormOpen(false);
+  
+    try {
+      console.log("Sending customer data:", newCustomer);
+      console.log("Access Token:", accessToken);
+  
+      const response = await fetch("http://localhost:8000/customers/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(newCustomer),
+      });
+  
+      // Log the full response details
+      // console.log("Response status:", response.status);
+      // console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+  
+      // If response is not OK, try to get error details
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response text:", errorText);
+        throw new Error(`Failed to create customer. Status: ${response.status}, Error: ${errorText}`);
+      }
+  
+      const customer = await response.json();
+      // console.log("Created customer:", customer);
+  
+      setCustomers([...customers, customer]);
+      setIsFormOpen(false);
+    } catch (error) {
+      console.error("Detailed error creating customer:", error);
+      // Optionally add user-friendly error handling
+      alert(`Error creating customer: ${error.message}`);
+    }
   };
 
   const handleUpdateCustomer = (updatedCustomer) => {
