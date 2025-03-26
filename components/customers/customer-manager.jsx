@@ -89,18 +89,40 @@ export function CustomerManager() {
     }
   };
 
-  const handleUpdateCustomer = (updatedCustomer) => {
+  const handleUpdateCustomer = async(updatedCustomer) => {
+    await fetch(
+      `http://localhost:8000/customers/${updatedCustomer.id}`,
+      
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedCustomer),
+      }
+    );
     setCustomers(
       customers.map((customer) =>
-        customer.id === updatedCustomer.id ? updatedCustomer : customer
+        customer.id === updatedCustomer.id ?
+       {...updatedCustomer, updated_at: new Date().toISOString()} : customer
       )
     );
     setIsFormOpen(false);
     setIsEditing(false);
   };
 
-  const handleDeleteCustomer = () => {
+  const handleDeleteCustomer = async() => {
     if (currentCustomer) {
+      await fetch(
+        `http://localhost:8000/customers/${currentCustomer.id}`,
+        
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setCustomers(
         customers.filter((customer) => customer.id !== currentCustomer.id)
       );
