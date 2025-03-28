@@ -20,6 +20,31 @@ export const ProductTable = ({
   onEditProduct,
   onDeleteProduct,
 }) => {
+  const productsFormat = products.map((product) => {
+    const category = {
+      id: product?.category?.id ?? "NO-CATEGORY-ID",
+      name: product?.category?.name ?? "NO_CATEGORY_NAME",
+      description: product?.category?.description ?? "NO_CATEGORY_DESCRIPTION",
+    };
+
+    const brand = {
+      id: product?.brand?.id ?? "NO-BRAND-ID",
+      name: product?.brand?.name ?? "NO_BRAND_NAME",
+      description: product?.brand?.description ?? "NO_BRAND_DESCRIPTION",
+    };
+
+    return {
+      title: product?.title ?? "NO_TITLE",
+      price: product.price,
+      description: product.description,
+      image: product.image,
+      id: product.id,
+      created_at: product.created_at,
+      category,
+      brand,
+    };
+  });
+
   const formatDate = (dateString) =>
     format(new Date(dateString), "dd MMM yyyy", { locale: es });
 
@@ -44,7 +69,7 @@ export const ProductTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {products.length === 0 ? (
+          {productsFormat.length === 0 ? (
             <TableRow>
               <TableCell
                 colSpan={7}
@@ -54,7 +79,7 @@ export const ProductTable = ({
               </TableCell>
             </TableRow>
           ) : (
-            products.map((product) => (
+            productsFormat.map((product) => (
               <TableRow
                 key={product.id}
                 className="cursor-pointer hover:bg-muted/50"
