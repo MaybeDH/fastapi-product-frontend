@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Eye, Package } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import Image from "next/image";
 
 export const ProductTable = ({
   products,
@@ -64,7 +65,7 @@ export const ProductTable = ({
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center overflow-hidden">
                       {product.image ? (
-                        <img
+                        <Image
                           src={product.image || "/placeholder.svg"}
                           alt={product.title}
                           className="h-full w-full object-cover"

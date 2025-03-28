@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +32,7 @@ export function ProductDetails({ isOpen, onClose, product }) {
           <div className="flex items-center justify-center">
             <div className="h-40 w-40 rounded-md bg-muted flex items-center justify-center overflow-hidden">
               {product.image ? (
-                <img
+                <Image
                   src={product.image || "/placeholder.svg"}
                   alt={product.title}
                   className="h-full w-full object-cover"

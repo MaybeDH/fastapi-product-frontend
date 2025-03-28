@@ -46,50 +46,50 @@ export function ProductManager() {
     return normalizedProduct;
   };
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const categoriesResponse = await fetch(
-        "http://localhost:8000/catalog/products_category/"
-      );
-      if (!categoriesResponse.ok) throw new Error("Error al cargar categorías");
-      const categoriesData = await categoriesResponse.json();
-
-      const categoriesMap = new Map();
-      categoriesData.forEach((category) =>
-        categoriesMap.set(category.id, category)
-      );
-
-      const brandsResponse = await fetch(
-        "http://localhost:8000/catalog/product_brand/"
-      );
-      if (!brandsResponse.ok) throw new Error("Error al cargar marcas");
-      const brandsData = await brandsResponse.json();
-
-      const brandsMap = new Map();
-      brandsData.forEach((brand) => brandsMap.set(brand.id, brand));
-
-      const productsResponse = await fetch("http://localhost:8000/products/");
-      if (!productsResponse.ok) throw new Error("Error al cargar productos");
-      const productsData = await productsResponse.json();
-
-      const normalizedProducts = productsData.map((product) =>
-        normalizeProduct(product, categoriesMap, brandsMap)
-      );
-
-      setProducts(normalizedProducts);
-      setCategories(categoriesData);
-      setBrands(brandsData);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const categoriesResponse = await fetch(
+          "http://localhost:8000/catalog/products_category/"
+        );
+        if (!categoriesResponse.ok)
+          throw new Error("Error al cargar categorías");
+        const categoriesData = await categoriesResponse.json();
+
+        const categoriesMap = new Map();
+        categoriesData.forEach((category) =>
+          categoriesMap.set(category.id, category)
+        );
+
+        const brandsResponse = await fetch(
+          "http://localhost:8000/catalog/product_brand/"
+        );
+        if (!brandsResponse.ok) throw new Error("Error al cargar marcas");
+        const brandsData = await brandsResponse.json();
+
+        const brandsMap = new Map();
+        brandsData.forEach((brand) => brandsMap.set(brand.id, brand));
+
+        const productsResponse = await fetch("http://localhost:8000/products/");
+        if (!productsResponse.ok) throw new Error("Error al cargar productos");
+        const productsData = await productsResponse.json();
+
+        const normalizedProducts = productsData.map((product) =>
+          normalizeProduct(product, categoriesMap, brandsMap)
+        );
+
+        setProducts(normalizedProducts);
+        setCategories(categoriesData);
+        setBrands(brandsData);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchData();
   }, []);
 

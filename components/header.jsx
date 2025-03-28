@@ -58,7 +58,7 @@ export function Header() {
     };
 
     fetchUserData();
-  }, []);
+  }, [router]);
 
   const handleLogout = async () => {
     const accessToken = localStorage.getItem("accessToken"); 

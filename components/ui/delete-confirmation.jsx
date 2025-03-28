@@ -22,7 +22,7 @@ export function DeleteConfirmation({
         <AlertDialogHeader>
           <AlertDialogTitle>¿Está seguro de eliminar esta tarea?</AlertDialogTitle>
           <AlertDialogDescription>
-            Está a punto de eliminar la tarea <span className="font-medium">"{taskTitle}"</span>. Esta acción no se
+            Está a punto de eliminar la tarea <span className="font-medium">&quot;{taskTitle}&quot;</span>. Esta acción no se
             puede deshacer.
           </AlertDialogDescription>
         </AlertDialogHeader>

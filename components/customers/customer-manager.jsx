@@ -46,7 +46,7 @@ export function CustomerManager() {
     };
 
     fetchCustomers();
-  }, []);
+  }, [router]);
 
   const handleCreateCustomer = async (newCustomer) => {
     const accessToken = localStorage.getItem("accessToken");
