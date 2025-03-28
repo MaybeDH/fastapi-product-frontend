@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { TaskTable } from "@/components/task/task-table";
 import { TaskForm } from "@/components/task/task-form";
@@ -10,18 +10,12 @@ import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
 // import { Button } from "../ui/button";
 
 export function TaskManager({ allTasks }) {
-  //console.log({ allTasks });
-
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(allTasks);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    setTasks(allTasks);
-  }, [allTasks]);
 
   const handleCreateTask = async (newTask) => {
     const task = {
