@@ -14,7 +14,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, User } from "lucide-react";
 
-// Mock inicial con user null cuando no está autenticado
 const mockAuthState = {
   isAuthenticated: false,
   user: null,
@@ -24,14 +23,11 @@ export function Header() {
   const router = useRouter();
   const [authState, setAuthState] = useState(mockAuthState);
 
-  // Simular verificación de autenticación al cargar
   useEffect(() => {
-    // En una aplicación real, verificaríamos el estado de autenticación desde una API o localStorage
     const isLoggedIn = localStorage.getItem("accessToken");
 
     const fetchUserData = async () => {
       if (!isLoggedIn) {
-        // Redirect to login page if no token
         router.push("/login");
         return;
       }
@@ -57,7 +53,6 @@ export function Header() {
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
-        // Optionally redirect to login or show an error message
         router.push("/login");
       }
     };
@@ -66,7 +61,7 @@ export function Header() {
   }, []);
 
   const handleLogout = async () => {
-    const accessToken = localStorage.getItem("accessToken"); // 1. "token" -> "accessToken"  2. "" -> no tienes nada
+    const accessToken = localStorage.getItem("accessToken"); 
 
     if (!accessToken) {
       return;

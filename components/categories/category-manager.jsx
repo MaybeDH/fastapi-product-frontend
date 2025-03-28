@@ -9,42 +9,12 @@ import { CategoryDetails } from "./category-details";
 import { DeleteConfirmation } from "../ui/delete-confirmation";
 
 export function CategoryManager({ allCategories }) {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(allCategories);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-
-  // Simulate fetching categories from an API
-  useEffect(() => {
-    // Mock categories
-    /* const mockCategories = [
-      {
-        id: 1,
-        name: "Electrónicos",
-        description: "Productos electrónicos y gadgets",
-        created_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: 2,
-        name: "Ropa",
-        description: "Prendas de vestir y accesorios",
-        created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: 3,
-        name: "Hogar",
-        description: "Artículos para el hogar",
-        created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ] */
-
-    setCategories(allCategories);
-  }, [allCategories]);
 
   const handleCreateCategory = async (newCategory) => {
     const category = {

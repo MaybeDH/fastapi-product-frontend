@@ -34,7 +34,6 @@ export function UserProfile() {
     const fetchUserData = async () => {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
-        // Redirect to login page if no token
         router.push("/login");
         return;
       }
@@ -65,7 +64,6 @@ export function UserProfile() {
         }));
       } catch (error) {
         console.error("Error fetching user data:", error);
-        // Optionally redirect to login or show an error message
         router.push("/login");
       }
     };
@@ -117,7 +115,6 @@ export function UserProfile() {
                 </CardDescription>
               </div>
             </div>
-            {/* <Button onClick={() => setIsEditFormOpen(true)}>Editar perfil</Button> */}
           </div>
         </CardHeader>
         <CardContent className="pt-6">
@@ -188,13 +185,6 @@ export function UserProfile() {
           </Tabs>
         </CardContent>
       </Card>
-
-      {/* <EditProfileForm
-        isOpen={isEditFormOpen}
-        onClose={() => setIsEditFormOpen(false)}
-        onSave={handleSaveProfile}
-        user={user}
-      /> */}
     </div>
   );
 }

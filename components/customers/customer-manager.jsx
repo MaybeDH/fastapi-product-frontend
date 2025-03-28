@@ -23,7 +23,6 @@ export function CustomerManager() {
     const fetchCustomers = async () => {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
-        // Redirect to login page if no token
         router.push("/login");
         return;
       }
@@ -42,7 +41,6 @@ export function CustomerManager() {
         setCustomers(data);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        // Optionally redirect to login or show an error message
         router.push("/login");
       }
     };
@@ -66,11 +64,6 @@ export function CustomerManager() {
         body: JSON.stringify(newCustomer),
       });
   
-      // Log the full response details
-      // console.log("Response status:", response.status);
-      // console.log("Response headers:", Object.fromEntries(response.headers.entries()));
-  
-      // If response is not OK, try to get error details
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error response text:", errorText);
@@ -78,13 +71,11 @@ export function CustomerManager() {
       }
   
       const customer = await response.json();
-      // console.log("Created customer:", customer);
   
       setCustomers([...customers, customer]);
       setIsFormOpen(false);
     } catch (error) {
       console.error("Detailed error creating customer:", error);
-      // Optionally add user-friendly error handling
       alert(`Error creating customer: ${error.message}`);
     }
   };

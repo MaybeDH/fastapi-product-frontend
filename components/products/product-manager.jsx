@@ -19,18 +19,14 @@ export function ProductManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Función para normalizar la estructura de los productos
   const normalizeProduct = (product, categoriesMap, brandsMap) => {
-    // Asegúrate de que el producto tiene la estructura correcta
     const normalizedProduct = { ...product };
 
-    // Si el producto tiene category_id pero no category, crea el objeto category
     if (product.category_id && !product.category) {
       const category = categoriesMap.get(product.category_id);
       if (category) {
         normalizedProduct.category = category;
       } else {
-        // Si no encontramos la categoría, creamos un objeto con la información mínima
         normalizedProduct.category = {
           id: product.category_id,
           name: "Desconocida",
@@ -38,13 +34,11 @@ export function ProductManager() {
       }
     }
 
-    // Si el producto tiene brand_id pero no brand, crea el objeto brand
     if (product.brand_id && !product.brand) {
       const brand = brandsMap.get(product.brand_id);
       if (brand) {
         normalizedProduct.brand = brand;
       } else {
-        // Si no encontramos la marca, creamos un objeto con la información mínima
         normalizedProduct.brand = { id: product.brand_id, name: "Desconocida" };
       }
     }
@@ -52,45 +46,37 @@ export function ProductManager() {
     return normalizedProduct;
   };
 
-  // Función para cargar los datos
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Obtener categorías
       const categoriesResponse = await fetch(
         "http://localhost:8000/catalog/products_category/"
       );
       if (!categoriesResponse.ok) throw new Error("Error al cargar categorías");
       const categoriesData = await categoriesResponse.json();
 
-      // Crear un mapa de categorías para referencia rápida
       const categoriesMap = new Map();
       categoriesData.forEach((category) =>
         categoriesMap.set(category.id, category)
       );
 
-      // Obtener marcas
       const brandsResponse = await fetch(
         "http://localhost:8000/catalog/product_brand/"
       );
       if (!brandsResponse.ok) throw new Error("Error al cargar marcas");
       const brandsData = await brandsResponse.json();
 
-      // Crear un mapa de marcas para referencia rápida
       const brandsMap = new Map();
       brandsData.forEach((brand) => brandsMap.set(brand.id, brand));
 
-      // Obtener productos
       const productsResponse = await fetch("http://localhost:8000/products/");
       if (!productsResponse.ok) throw new Error("Error al cargar productos");
       const productsData = await productsResponse.json();
 
-      // Normalizar la estructura de los productos
       const normalizedProducts = productsData.map((product) =>
         normalizeProduct(product, categoriesMap, brandsMap)
       );
 
-      // Actualizar el estado
       setProducts(normalizedProducts);
       setCategories(categoriesData);
       setBrands(brandsData);
@@ -103,7 +89,6 @@ export function ProductManager() {
     }
   };
 
-  // Cargar datos al montar el componente
   useEffect(() => {
     fetchData();
   }, []);
@@ -129,16 +114,13 @@ export function ProductManager() {
 
       if (!response.ok) throw new Error("Error al crear el producto");
 
-      // Obtener el producto creado
       const createdProduct = await response.json();
 
-      // Buscar la categoría y marca completas
       const category = categories.find(
         (c) => c.id === parseInt(newProduct.categoryId)
       );
       const brand = brands.find((b) => b.id === parseInt(newProduct.brandId));
 
-      // Añadir la categoría y marca completas al producto
       const completeProduct = {
         ...createdProduct,
         category: category || {
@@ -183,7 +165,6 @@ export function ProductManager() {
 
       if (!response.ok) throw new Error("Error al actualizar el producto");
 
-      // Buscar la categoría y marca completas
       const category = categories.find(
         (c) => c.id === parseInt(updatedProduct.categoryId)
       );
@@ -191,7 +172,6 @@ export function ProductManager() {
         (b) => b.id === parseInt(updatedProduct.brandId)
       );
 
-      // Actualizar el producto en el estado local
       setProducts((prev) =>
         prev.map((product) => {
           if (product.id === currentProduct.id) {
