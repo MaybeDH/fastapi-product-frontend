@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardContent,
@@ -10,9 +11,8 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Mail, User } from "lucide-react";
+import { Mail, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-//import EditProfileForm from "./edit-profile-form";
 
 export function UserProfile() {
   const [user, setUser] = useState({
@@ -20,13 +20,13 @@ export function UserProfile() {
     email: "usuario@ejemplo.com",
     first_name: "",
     last_name: "",
-    created_at: "2023-01-15T10:30:00Z",
+    is_verified: false,
+    //created_at: "2023-01-15T10:30:00Z",
     avatar: "",
-    tasks_completed: 12,
-    tasks_pending: 5,
+    // tasks_completed: 12,
+    // tasks_pending: 5,
     bio: "",
   });
-  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
   const router = useRouter();
 
@@ -75,22 +75,6 @@ export function UserProfile() {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("es-ES", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(date);
-  };
-
-  const handleSaveProfile = (updatedUser) => {
-    setUser((prev) => ({
-      ...prev,
-      ...updatedUser,
-    }));
-  };
-
   return (
     <div className="container mx-auto py-10 px-4 max-w-4xl">
       <Card>
@@ -107,9 +91,12 @@ export function UserProfile() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-2xl">
-                  {user.first_name} {user.last_name}
+                
+                <CardTitle className="text-2xl flex items-center space-x-1">
+                  <span>{user.first_name} {user.last_name}</span>
+                  {user.is_verified && <CheckCircleIcon className="h-5 w-5 text-blue-500" />}
                 </CardTitle>
+
                 <CardDescription className="text-base">
                   @{user.username}
                 </CardDescription>
@@ -119,9 +106,9 @@ export function UserProfile() {
         </CardHeader>
         <CardContent className="pt-6">
           <Tabs defaultValue="info" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-1">
               <TabsTrigger value="info">Información</TabsTrigger>
-              <TabsTrigger value="stats">Estadísticas</TabsTrigger>
+              {/* <TabsTrigger value="stats">Estadísticas</TabsTrigger> */}
             </TabsList>
             <TabsContent value="info" className="space-y-6 pt-4">
               <div className="grid gap-4">
@@ -141,13 +128,7 @@ export function UserProfile() {
                     <p>{user.email}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CalendarDays className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Miembro desde</p>
-                    <p>{formatDate(user.created_at)}</p>
-                  </div>
-                </div>
+                
                 {user.bio && (
                   <div className="mt-4">
                     <p className="text-sm font-medium">Biografía</p>
@@ -156,7 +137,8 @@ export function UserProfile() {
                 )}
               </div>
             </TabsContent>
-            <TabsContent value="stats" className="pt-4">
+            {/* TODO: Agregar un apartado de estadisticas del usuario */}
+            {/* <TabsContent value="stats" className="pt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
                   <CardHeader className="pb-2">
@@ -181,7 +163,7 @@ export function UserProfile() {
                   </CardContent>
                 </Card>
               </div>
-            </TabsContent>
+            </TabsContent> */}
           </Tabs>
         </CardContent>
       </Card>
