@@ -1,15 +1,15 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-// import { Card } from "@/components/ui/card";
-import { ListChecks, TrendingUp, BarChart2 } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { CheckSquare, Package, Users, Clock, ArrowRight } from "lucide-react";
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardContent, 
+  CardDescription 
+} from "@/components/ui/card";
+import { ListChecks, TrendingUp, BarChart2, CheckSquare, Package, Users, Clock } from "lucide-react";
 
 export default function Home() {
   return (
-    // <div>
-    //   <h1>hola</h1>
-    // </div>
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
