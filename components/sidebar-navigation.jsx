@@ -144,7 +144,7 @@ export function SidebarNavigation() {
       >
         <div className="flex h-16 items-center border-b px-6 justify-between">
           {!isCollapsed && (
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/home" className="flex items-center gap-2">
               <CheckSquare className="h-6 w-6" />
               <span className="text-xl font-bold">Sistema</span>
             </Link>
