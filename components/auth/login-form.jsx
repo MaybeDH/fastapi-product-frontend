@@ -54,7 +54,7 @@ export function LoginForm() {
       // TODO: migrate to cookies, handle refresh token
 
       if (resp.success) {
-        router.push("/products");
+        router.push("/home");
       } else {
         throw new Error("Credenciales inválidas")
       }
