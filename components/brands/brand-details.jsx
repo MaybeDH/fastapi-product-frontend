@@ -12,6 +12,7 @@ export function BrandDetails({
   if (!brand) return null
 
   const formatDate = (dateString) => {
+    if (!dateString) return "-";
     return format(new Date(dateString), "dd MMMM yyyy, HH:mm:ss", { locale: es });
   }
 

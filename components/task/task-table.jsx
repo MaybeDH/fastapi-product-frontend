@@ -15,7 +15,7 @@ import { es } from "date-fns/locale";
 
 export function TaskTable({ tasks, onViewTask, onEditTask, onDeleteTask }) {
   const formatDate = (dateString) => {
-    if (!dateString) return "-";
+    if (!dateString) return "";
     return format(new Date(dateString), "dd MMM yyyy, HH:mm", { locale: es });
   };
 
@@ -60,10 +60,10 @@ export function TaskTable({ tasks, onViewTask, onEditTask, onDeleteTask }) {
                     {task.completed ? "Completada" : "Pendiente"}
                   </Badge>
                 </TableCell>
-                <TableCell className="hidden md:table-cell text-center">
+                <TableCell className="hidden md:table-cell">
                   {formatDate(task.created_at)}
                 </TableCell>
-                <TableCell className="hidden md:table-cell text-center">
+                <TableCell className="hidden md:table-cell">
                   {formatDate(task.updated_at)}
                 </TableCell>
                 <TableCell className="text-right">

@@ -12,6 +12,7 @@ export function BrandTable({
   onDeleteBrand
 }) {
   const formatDate = (dateString) => {
+    if (!dateString) return "";
     return format(new Date(dateString), "dd MMM yyyy", { locale: es });
   }
 
