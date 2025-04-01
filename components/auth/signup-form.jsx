@@ -130,7 +130,7 @@ export function SignupForm() {
         return;
       }
 
-      router.push("/");
+      router.push("/home");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Error al registrar usuario"
