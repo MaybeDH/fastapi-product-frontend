@@ -13,8 +13,8 @@ export default function Home() {
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold">Bienvenido, 
-          {/* {userName} */} Dayana
+        <h1 className="text-3xl font-bold">Bienvenido 
+          {/* {userName} */} 👋
           </h1>
         <p className="text-muted-foreground">Aquí tienes un resumen de la actividad de tu sistema de gestión.</p>
       </div>
